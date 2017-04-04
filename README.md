@@ -2,7 +2,13 @@
 
 Esta actividad consiste en analizar datos usando Apache Flink y Zeppelin.
 
-Se proporciona un docker-compose.yml en este repositorio que lanza las dos herramientas.
+Se proporciona un docker-compose.yml en este repositorio que lanza las dos herramientas. Los pasos para arrancar el entorno son:
+1 - Entrar en una maquina linux con git, docker y docker-compose instalados.
+2 - Clonar este repositorio "git clone https://github.com/germanblanco/RETO_12.git"
+3 - Construir las imagenes docker "cd RETO_12; docker-compose build". Este paso tarda un rato y aparece el error "localhost [127.0.0.1] 8080 (http-alt) : Connection refused" varias veces (entre 5 y 20). Esto es normal.
+4 - Lanzar el entorno con "docker-compose up"
+
+Para el resto de los ejercicios, Zeppelin esta accesible en la URL: http://<IP de la maquina Linux donde se hizo docker-compose up>:8888
 
 Para realizar la practica sera necesario agregar el interprete de Flink a Zeppelin siguiendo las instrucciones que se encuentran en esta pagina: http://zeppelin.apache.org/docs/0.7.0/manual/dynamicinterpreterload.html
 
