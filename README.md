@@ -47,5 +47,6 @@ val result10 = wordCounts.first(10).collect()
 
 <pre><code>
 %flink
-println("%table Word\tFrequency\n" + result.map(x => x.word + "\t" + x.frequency).mkString("\n))
+val result = wordCounts.collect()
+println("%table Word\tFrequency\n" + result.map(x => x.word + "\t" + x.frequency).mkString("\n"))
 </code></pre>
