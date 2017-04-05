@@ -40,13 +40,18 @@ val partialCounts: DataSet[WordCount] = bible.flatMap{
 val wordCounts = partialCounts.groupBy("word").reduce{
     (left, right) => WordCount(left.word, left.frequency + right.frequency)
 }
-val result10 = wordCounts.first(10).collect()
 </code></pre>
 
-5 - Poner el resultado en un grafico con el siguiente codigo y eligiendo el tipo de grafico.
+5 - Filtrar los resultados.
 
 <pre><code>
 %flink
-val result = wordCounts.collect()
+val result = wordCounts.filter(x => x.frequency > 6000)
+</code></pre>
+
+6 - Poner el resultado en un grafico con el siguiente codigo y eligiendo el tipo de grafico.
+
+<pre><code>
+%flink
 println("%table Word\tFrequency\n" + result.map(x => x.word + "\t" + x.frequency).mkString("\n"))
 </code></pre>
