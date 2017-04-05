@@ -1,17 +1,51 @@
 # RETO_12
 
-Esta actividad consiste en analizar datos usando Apache Flink y Zeppelin.
+Esta actividad consiste en ejecutar unas lineas de prueba con Apache Flink y Zeppelin.
 
-Se proporciona un docker-compose.yml en este repositorio que lanza las dos herramientas. Los pasos para arrancar el entorno son:
+Se proporciona un docker-compose.yml en este repositorio que lanza un Zeppelin que incluye un interprete para Flink. Los pasos para arrancar el entorno son:
+
 1 - Entrar en una maquina linux con git, docker y docker-compose instalados.
+
 2 - Clonar este repositorio "git clone https://github.com/germanblanco/RETO_12.git"
+
 3 - Construir las imagenes docker "cd RETO_12; docker-compose build". Este paso tarda un rato y aparece el error "localhost [127.0.0.1] 8080 (http-alt) : Connection refused" varias veces (entre 5 y 20). Esto es normal.
+
 4 - Lanzar el entorno con "docker-compose up"
 
-Para el resto de los ejercicios, Zeppelin esta accesible en la URL: http://<IP de la maquina Linux donde se hizo docker-compose up>:8888
+Para el resto de los ejercicios, Zeppelin esta accesible en la URL: http://\<IP de la maquina Linux donde se hizo docker-compose up\>:8888
 
-Una vez hecho esto, crear un interprete de Flink en Zeppelin y hacer una prueba como indican estas instrucciones https://zeppelin.apache.org/docs/0.7.0/interpreter/flink.html.
+A continuacion, vamos a realizar un WordCount sobre un texto siguiendo el ejemplo en https://www.slideshare.net/tillrohrmann/data-analysis-49806564.
 
-El reto final sera buscarse unos datos majos en internet y presentar algunos graficos usando Zeppelin. Por ejemplo del Registro Vasco de emisiones y fuentes contaminantes del 2015 http://opendata.euskadi.eus/w79-home/es o de los indicadores de desarrollo del Banco Mundial http://data.worldbank.org/data-catalog/world-development-indicators
+1 - Entrar en la URL de Zeppelin y hacer click en "Notebook" -> "Create a new note"
 
-Si tengo tiempo esta tarde agrego un ejemplo completo.
+2 - Elegir un nombre cualquiera y "flink" como "default interpreter"
+
+3 - Descargarse un libro. Para ello introducir las siguientes líneas en el campo editable del notebook y ejecutarlas con "Shift-Enter":
+
+<pre><code>
+%sh
+rm 10.txt.utf-8
+wget http://www.gutenberg.org/ebooks/10.txt.utf-8
+</code></pre>
+
+4 - Contar las apariciones de cada palabra, usando estas lineas:
+
+<pre><code>
+%flink
+case class WordCount(word: String, frequency: Int)
+val bible:DataSet[String] = env.readTextFile("10.txt.utf-8")
+val partialCounts: DataSet[WordCount] = bible.flatMap{
+    line => """\b\w+\b""".r.findAllIn(line).map(word => WordCount(word, 1))
+}
+val wordCounts = partialCounts.groupBy("word").reduce{
+    (left, right) => WordCount(left.word, left.frequency + right.frequency)
+}
+val result10 = wordCounts.first(10).collect()
+</code></pre>
+
+5 - Poner el resultado en un grafico con el siguiente codigo y eligiendo el tipo de grafico.
+
+<pre><code>
+%flink
+println("%table Word\tFrequency\n" + result.map(x => x.word + "\t" + x.frequency).mkString("\n))
+</code></pre>
